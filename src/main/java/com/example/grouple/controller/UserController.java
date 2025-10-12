@@ -2,6 +2,8 @@ package com.example.grouple.controller;
 
 import com.example.grouple.dto.UserRequest;
 import com.example.grouple.dto.UserResponse;
+import com.example.grouple.dto.LoginRequest;
+import com.example.grouple.dto.LoginResponse;
 import com.example.grouple.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -96,5 +98,38 @@ public class UserController {
         public int getCode() { return code; }
         public String getMessage() { return message; }
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            // 로그인 처리
+            LoginResponse loginResponse = userService.login(request);
+            return ResponseEntity.ok(new LoginSuccessResponse(loginResponse));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(400, e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse(401, e.getMessage()));
+        } catch (Throwable t) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(500, "서버 내부 오류가 발생했습니다."));
+        }
+    }
+
+    // -------------------------------
+// 로그인 성공 응답 DTO
+    static class LoginSuccessResponse {
+        private String status = "success";
+        private LoginResponse data;
+
+        public LoginSuccessResponse(LoginResponse data) {
+            this.data = data;
+        }
+
+        public String getStatus() { return status; }
+        public LoginResponse getData() { return data; }
+    }
+
 }
 

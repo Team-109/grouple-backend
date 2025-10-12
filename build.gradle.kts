@@ -31,6 +31,11 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+// JSON 처리용
 
     // Spring Boot JPA 등 기존 의존성 유지
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
