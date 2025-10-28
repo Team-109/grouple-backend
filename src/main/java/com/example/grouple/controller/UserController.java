@@ -1,134 +1,63 @@
 package com.example.grouple.controller;
 
-import com.example.grouple.dto.UserRequest;
-import com.example.grouple.dto.UserResponse;
-import com.example.grouple.dto.LoginRequest;
-import com.example.grouple.dto.LoginResponse;
+import com.example.grouple.api.ApiResponse;
+import com.example.grouple.dto.user.request.UserDeleteRequest;
+import com.example.grouple.dto.user.request.UserImageModifyForm;
+import com.example.grouple.dto.user.request.UserModifyRequest;
+import com.example.grouple.dto.auth.request.RegisterRequest;
+import com.example.grouple.dto.auth.response.UserInfoResponse;
+import com.example.grouple.dto.user.response.UserImageModifyResponse;
+import com.example.grouple.dto.user.response.UserModifyResponse;
+import com.example.grouple.dto.auth.response.RegisterResponse;
+import com.example.grouple.dto.auth.request.LoginRequest;
+import com.example.grouple.dto.auth.response.LoginResponse;
+import com.example.grouple.service.AuthService;
 import com.example.grouple.service.UserService;
-import org.springframework.http.HttpStatus;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "02. User", description = "유저 관련 API")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/users") // api 명세에 따라 변경
 public class UserController {
 
     private final UserService userService;
+    private final AuthService authService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
+    }
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal(expression = "id") Integer meId) throws Exception {
+        var res = userService.getUserById(meId);
+        return ResponseEntity.ok(ApiResponse.success(res));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserRequest request) {
-        try {
-            // 필수 입력값 확인
-            if (request.getId() == null || request.getId().isEmpty() ||
-                    request.getUsername() == null || request.getUsername().isEmpty() ||
-                    request.getPassword() == null || request.getPassword().isEmpty() ||
-                    request.getPasswordConfirm() == null || request.getPasswordConfirm().isEmpty() ||
-                    request.getEmail() == null || request.getEmail().isEmpty() ||
-                    request.getPhone() == null || request.getPhone().isEmpty()) {
-
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(400, "필수 입력값이 누락되었습니다."));
-            }
-
-            // 비밀번호 확인
-            if (!request.getPassword().equals(request.getPasswordConfirm())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(400, "비밀번호가 일치하지 않습니다."));
-            }
-
-            // ID 중복 체크
-            if (userService.existsById(request.getId())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ErrorResponse(409, "이미 사용 중인 ID입니다."));
-            }
-
-            // 회원가입 처리
-            UserResponse newUser = userService.registerUser(request);
-
-            // 성공 응답
-            return ResponseEntity.ok(new SuccessResponse(newUser));
-
-        } catch (Exception e) {
-            // 서버 오류 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(500, "서버 내부 오류가 발생했습니다."));
-        }
+    @PutMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateUserInfo(@AuthenticationPrincipal(expression = "id") Integer meId, @Valid @RequestBody UserModifyRequest request) throws Exception {
+        var updated = userService.update(meId, request);
+        return ResponseEntity.ok(ApiResponse.success(updated));
     }
 
-    // -------------------------------
-    // 성공 응답 DTO
-    static class SuccessResponse {
-        private String status = "success";
-        private UserResponse data;
-
-        public SuccessResponse(UserResponse data) {
-            this.data = data;
-        }
-
-        public String getStatus() { return status; }
-        public UserResponse getData() { return data; }
+    @PutMapping("/me/image")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateUserPhoto(@AuthenticationPrincipal(expression = "id") Integer meId, @ModelAttribute UserImageModifyForm form) throws Exception {
+        var updated = userService.updateImage(meId, form);
+        return ResponseEntity.ok(ApiResponse.success(updated));
     }
 
-    // 오류 응답 DTO
-    static class ErrorResponse {
-        private String status = "error";
-        private ErrorDetail error;
-
-        public ErrorResponse(int code, String message) {
-            this.error = new ErrorDetail(code, message);
-        }
-
-        public String getStatus() { return status; }
-        public ErrorDetail getError() { return error; }
-    }
-
-    static class ErrorDetail {
-        private int code;
-        private String message;
-
-        public ErrorDetail(int code, String message) {
-            this.code = code;
-            this.message = message;
-        }
-
-        public int getCode() { return code; }
-        public String getMessage() { return message; }
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try {
-            // 로그인 처리
-            LoginResponse loginResponse = userService.login(request);
-            return ResponseEntity.ok(new LoginSuccessResponse(loginResponse));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(400, e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse(401, e.getMessage()));
-        } catch (Throwable t) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(500, "서버 내부 오류가 발생했습니다."));
-        }
-    }
-
-    // -------------------------------
-// 로그인 성공 응답 DTO
-    static class LoginSuccessResponse {
-        private String status = "success";
-        private LoginResponse data;
-
-        public LoginSuccessResponse(LoginResponse data) {
-            this.data = data;
-        }
-
-        public String getStatus() { return status; }
-        public LoginResponse getData() { return data; }
+    @DeleteMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> deleteUser(@AuthenticationPrincipal(expression = "id") Integer meId, @RequestBody UserDeleteRequest request) throws Exception {
+        userService.deleteUser(meId, request);
+        return ResponseEntity.ok(ApiResponse.success("계정이 정상적으로 삭제되었습니다."));
     }
 
 }

@@ -6,7 +6,7 @@ plugins {
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
-description = "Demo project for Spring Boot"
+description = "Grouple Backend Project"
 
 java {
 	toolchain {
@@ -22,6 +22,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -39,6 +40,11 @@ dependencies {
 
     // Spring Boot JPA 등 기존 의존성 유지
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+	// swagger UI
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+
+	implementation("io.github.cdimascio:dotenv-java:3.0.2")
 }
 
 tasks.withType<Test> {

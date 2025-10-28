@@ -14,34 +14,34 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "users") // users 테이블과 매핑
-public class User {
-
+@Table(name = "organization") // users 테이블과 매핑
+public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Integer id;
 
     @Column(nullable = false)
-    private String username;
+    private String name;
 
     @Column(nullable = false)
-    private String password;
+    private String description;
 
     @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String phone;
-
-    @Column()
     private String image;
 
-    @OneToMany(mappedBy = "owner")
-    private List<Organization> ownedOrganizations = new ArrayList<>();
+    @Column(nullable = false)
+    private String code;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
+
+    @OneToMany(mappedBy = "organization")
+    private List<Member> members = new ArrayList<>();
 
     @CreatedDate
     @Column(nullable = false)
@@ -50,6 +50,5 @@ public class User {
     @LastModifiedDate
     @Column(nullable = false)
     private Instant updatedAt;
-
 }
 
