@@ -1,0 +1,24 @@
+services:
+  db:
+    image: mysql:9.5.0
+    container_name: grouple-db
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: grouple-root-pw
+      MYSQL_DATABASE: grouple
+      MYSQL_USER: grouple
+      MYSQL_PASSWORD: grouple-pw
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - default
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    name: grouple_db_data
+
+networks:
+  default:
+    name: grouple-network
