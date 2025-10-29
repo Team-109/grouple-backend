@@ -1,12 +1,18 @@
 package com.example.grouple.controller;
 
+import com.example.grouple.api.ApiResponse;
+import com.example.grouple.dto.organization.request.OrganizationCreateRequest;
 import com.example.grouple.service.AuthService;
 import com.example.grouple.service.OrganizationService;
 import com.example.grouple.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "02. Organization", description = "조직 관련 API")
+@Tag(name = "03. Organization", description = "조직 관련 API")
 @RestController
 @RequestMapping("/organization") // api 명세에 따라 변경
 public class OrganizationController {
@@ -19,6 +25,12 @@ public class OrganizationController {
         this.orgService = orgService;
         this.authService = authService;
         this.userService = userService;
+    }
+    @PostMapping("/")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> createOrg(@AuthenticationPrincipal(expression = "id") Integer meId, @Valid @RequestBody OrganizationCreateRequest req) throws Exception {
+        var res = orgService.createOrg(meId, req);
+        return ResponseEntity.ok(ApiResponse.success(res));
     }
 }
 
