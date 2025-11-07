@@ -12,7 +12,7 @@ import java.util.Base64;
 @Configuration
 public class JwtKeyConfig {
     @Bean
-    public SecretKey jwtSigningKey(@Value("${app.jwt.secret-base64}") String b64) {
+    public SecretKey jwtSigningKey(@Value("${app.jwt.secret-key}") String b64) {
         return Keys.hmacShaKeyFor(Base64.getDecoder().decode(b64));
     }
 }
