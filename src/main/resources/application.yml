@@ -22,3 +22,7 @@ spring:
 app:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
+
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED}
