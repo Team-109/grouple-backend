@@ -1,0 +1,16 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        tool:
+          schema: DEBUG
+      springframework:
+        security: DEBUG
+        web: INFO
