@@ -18,7 +18,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "organization") // users 테이블과 매핑
+@Table(name = "organizations") // users 테이블과 매핑
 public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
