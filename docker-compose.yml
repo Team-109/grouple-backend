@@ -1,9 +1,9 @@
 services:
   db:
-    image: mysql:9.5.0
+    image: mysql:8.0
     container_name: grouple-db
     ports:
-      - 3306:3306
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: grouple-root-pw
       MYSQL_DATABASE: grouple
@@ -21,4 +21,4 @@ volumes:
 
 networks:
   default:
-    name: grouple-network
+    name: g
