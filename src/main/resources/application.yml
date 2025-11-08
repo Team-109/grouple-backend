@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/grouple?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+    username: grouple
+    password: grouple-pw
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+app:
+  jwt:
+    secret-base64: PzOcSPs3PW6xU9uvJRZuC8oF6phf28X+ZK0lyJqwQcw=
