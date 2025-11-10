@@ -11,18 +11,18 @@ import java.util.Objects;
 @AllArgsConstructor
 public class MemberId implements Serializable {
     private Integer userId;
-    private Integer organizationId;
+    private Integer orgId;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MemberId that)) return false;
         return Objects.equals(userId, that.userId) &&
-                Objects.equals(organizationId, that.organizationId);
+                Objects.equals(orgId, that.orgId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, organizationId);
+        return Objects.hash(userId, orgId);
     }
 }

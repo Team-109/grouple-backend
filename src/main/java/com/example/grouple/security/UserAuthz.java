@@ -1,11 +1,8 @@
 package com.example.grouple.security;
 
-import com.example.grouple.repository.OrganizationRepository;
 import com.example.grouple.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,8 +33,8 @@ public class UserAuthz {
         }
         Object p = auth.getPrincipal();
 
-        if (p instanceof com.example.grouple.config.SecurityConfig.AuthPrincipal ap) {
-            return ap.id();
+        if (p instanceof com.example.grouple.security.AuthPrincipal ap) {
+            return ap.getId();
         }
         if (p instanceof CustomUserDetails cud) {
             return cud.getId();

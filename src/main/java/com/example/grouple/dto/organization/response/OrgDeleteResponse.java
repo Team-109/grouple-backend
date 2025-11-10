@@ -9,5 +9,8 @@ import java.time.Instant;
 @Getter
 @Builder
 @AllArgsConstructor
-public class OrganizationDeleteResponse {
+public class OrgDeleteResponse {
+    private Integer id;
+    private String code;
+    private Instant deletedAt;
 }

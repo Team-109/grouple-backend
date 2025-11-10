@@ -2,12 +2,15 @@ package com.example.grouple.controller;
 
 import com.example.grouple.api.ApiResponse;
 import com.example.grouple.dto.auth.request.LoginRequest;
+import com.example.grouple.dto.auth.request.RefreshTokenRequest;
 import com.example.grouple.dto.auth.request.RegisterRequest;
 import com.example.grouple.dto.auth.response.LoginResponse;
 import com.example.grouple.dto.auth.response.RegisterResponse;
 import com.example.grouple.dto.auth.response.UserInfoResponse;
+import com.example.grouple.security.AuthPrincipal;
 import com.example.grouple.service.AuthService;
 import com.example.grouple.service.UserService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,7 +37,7 @@ class AuthControllerTests {
     private AuthController authController;
 
     @Test
-    void shouldRegisterUser() throws Exception {
+    void shouldRegisterUser() {
         RegisterRequest request = new RegisterRequest();
         RegisterResponse response = RegisterResponse.builder()
                 .id(1)
@@ -47,18 +50,20 @@ class AuthControllerTests {
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         ApiResponse<?> body = (ApiResponse<?>) result.getBody();
+        Assertions.assertNotNull(body);
         assertThat(body.getData()).isEqualTo(response);
         verify(userService).register(request);
     }
 
     @Test
-    void shouldReturnMessageWhenUsernameAvailable() throws Exception {
+    void shouldReturnMessageWhenUsernameAvailable() {
         when(userService.existsByUsername("tester")).thenReturn(false);
 
         ResponseEntity<?> result = authController.checkIdAvailable("tester");
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         ApiResponse<?> body = (ApiResponse<?>) result.getBody();
+        Assertions.assertNotNull(body);
         assertThat(body.getMessage()).contains("available");
         verify(userService).existsByUsername("tester");
     }
@@ -80,12 +85,13 @@ class AuthControllerTests {
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         ApiResponse<?> body = (ApiResponse<?>) result.getBody();
+        Assertions.assertNotNull(body);
         assertThat(body.getData()).isEqualTo(response);
         verify(authService).login(request);
     }
 
     @Test
-    void shouldReturnSuccessWhenFetchingMe() throws Exception {
+    void shouldReturnSuccessWhenFetchingMe() {
         UserInfoResponse info = UserInfoResponse.builder()
                 .id(1)
                 .username("tester")
@@ -95,11 +101,28 @@ class AuthControllerTests {
                 .build();
         when(userService.getUserById(1)).thenReturn(info);
 
-        ResponseEntity<?> result = authController.getUserInfo(1);
+        ResponseEntity<?> result = authController.getUserInfo(new AuthPrincipal(1, "tester"));
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         ApiResponse<?> body = (ApiResponse<?>) result.getBody();
+        Assertions.assertNotNull(body);
         assertThat(body.getMessage()).isEqualTo("Authenticated");
         verify(userService).getUserById(1);
+    }
+
+    @Test
+    void shouldRefreshTokens() throws Exception {
+        RefreshTokenRequest request = new RefreshTokenRequest();
+        request.setRefreshToken("refresh");
+        LoginResponse response = new LoginResponse("new-access", "new-refresh");
+        when(authService.refresh("refresh")).thenReturn(response);
+
+        ResponseEntity<?> result = authController.refresh(request);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        ApiResponse<?> body = (ApiResponse<?>) result.getBody();
+        Assertions.assertNotNull(body);
+        assertThat(body.getData()).isEqualTo(response);
+        verify(authService).refresh("refresh");
     }
 }
