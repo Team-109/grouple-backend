@@ -1,9 +1,6 @@
 spring:
   application:
     name: grouple
-  mvc:
-    servlet:
-      path: /api
   config:
     import: optional:file:.env[.properties]
   jpa:

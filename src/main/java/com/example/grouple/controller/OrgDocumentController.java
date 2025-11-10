@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "06. Document", description = "조직 문서 관련 API")
+@Tag(name = "07. 조직 문서")
 @RestController
-@RequestMapping("/organizations/{organizationCode}/document")
+@RequestMapping("/organizations/{orgId}/docs")
 public class OrgDocumentController {
 }

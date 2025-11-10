@@ -9,7 +9,7 @@ import java.time.Instant;
 @Getter
 @Builder
 @AllArgsConstructor
-public class OrganizationCreateResponse {
+public class OrgCreateResponse {
     private Integer id;
     private String name;
     private String code;
