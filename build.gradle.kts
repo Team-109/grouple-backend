@@ -24,27 +24,25 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	implementation("com.mysql:mysql-connector-j")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.springframework.security:spring-security-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    compileOnly("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
-    // JWT
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14")
+	implementation("io.github.cdimascio:java-dotenv:5.2.2")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	implementation("com.mysql:mysql-connector-j")
+
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
-// JSON 처리용
 
-    // Spring Boot JPA 등 기존 의존성 유지
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    compileOnly("org.projectlombok:lombok:1.18.30")
 
-	// swagger UI
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-	implementation("io.github.cdimascio:dotenv-java:3.0.2")
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<Test> {
