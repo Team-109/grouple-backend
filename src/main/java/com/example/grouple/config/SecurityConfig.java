@@ -8,6 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import com.example.grouple.security.AuthPrincipal;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,11 +38,10 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity()
 @AllArgsConstructor
 public class SecurityConfig {
 
-    public  record AuthPrincipal (Integer id, String username) {}
     private final SecretKey jwtKey;
     private final UserDetailsService uds;
 
@@ -94,6 +95,7 @@ public class SecurityConfig {
                 mvc.pattern("/webjars/**"),
                 mvc.pattern("/auth/login"),
                 mvc.pattern("/auth/register"),
+                mvc.pattern("/auth/refresh"),
                 mvc.pattern("/auth/me"),
                 mvc.pattern("/auth/check_id")
         };
@@ -120,7 +122,7 @@ public class SecurityConfig {
         }
 
         @Override
-        protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+        protected void doFilterInternal(@NotNull HttpServletRequest req, @NotNull HttpServletResponse res, @NotNull FilterChain chain)
                 throws ServletException, IOException {
 
             if (SecurityContextHolder.getContext().getAuthentication() != null) {

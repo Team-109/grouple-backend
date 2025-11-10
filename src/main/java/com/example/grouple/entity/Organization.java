@@ -11,13 +11,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "organization") // users 테이블과 매핑
+@Table(name = "organizations") // users 테이블과 매핑
 public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +35,18 @@ public class Organization {
     private String image;
 
     @Column(nullable = false)
+    private String category;
+
+    @Column(nullable = false, unique = true)
     private String code;
+
+    // 간단한 랜점 코드 생성 구현 추후 서비스 레이어에서 중복 체크를 적용한 안전한 로직 구현 필요
+    @PrePersist
+    private void ensureCode() {
+        if (this.code == null || this.code.isBlank()) {
+            this.code = UUID.randomUUID().toString().replace("-", "").substring(0, 6).toUpperCase();
+        }
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)

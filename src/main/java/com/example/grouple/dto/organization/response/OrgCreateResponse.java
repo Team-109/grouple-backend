@@ -9,10 +9,10 @@ import java.time.Instant;
 @Getter
 @Builder
 @AllArgsConstructor
-public class OrganizationResponse {
+public class OrgCreateResponse {
     private Integer id;
-    private String code;
     private String name;
-    private String user_id;
+    private String code;
+    private Integer owner_id;
     private Instant createdAt;
 }
