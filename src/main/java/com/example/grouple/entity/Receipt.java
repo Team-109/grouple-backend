@@ -4,24 +4,38 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.time.Instant;
+import java.time.LocalDate;
 
 @Getter
 @Setter
-@Table(name = "announcements")
-public class Announcement {
+@NoArgsConstructor
+@Entity
+@Table(name = "receipts")
+public class Receipt {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, unique = true)
+    private Integer id;
 
-    private String title;
+    @Column(length = 10, nullable = false)
+    private String type;
+
+    @Column(nullable = false)
+    private Integer amount;
+
+    @Column(nullable = false)
+    private String category;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-
     @Column(nullable = false)
+    private LocalDate date;
+
+    @Column()
+    private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

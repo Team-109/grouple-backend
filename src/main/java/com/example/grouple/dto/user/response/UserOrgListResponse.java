@@ -1,6 +1,5 @@
 package com.example.grouple.dto.user.response;
 
-import com.example.grouple.entity.Notice;
 import lombok.*;
 
 import java.time.Instant;
