@@ -5,10 +5,13 @@ import lombok.*;
 @Data
 public class RegisterRequest {
     private String username;
-    private String email;
-    private String phone;
-    private String image;
     private String password;
     private String passwordConfirm;
+
+    private String name;
+    private String email;
+    private String phone;
+
+    private String image;
 }
 
