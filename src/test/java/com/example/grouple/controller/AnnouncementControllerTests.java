@@ -8,6 +8,6 @@ class AnnouncementControllerTests {
 
     @Test
     void shouldInstantiateController() {
-        assertThat(new OrgAnnouncementController()).isNotNull();
+        assertThat(new OrgAnnouncementController(null)).isNotNull();
     }
 }
