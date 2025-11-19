@@ -32,7 +32,7 @@ public class Announcement {
 
 
     @Column(nullable = false)
-    private Boolean star;
+    private Boolean star = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
