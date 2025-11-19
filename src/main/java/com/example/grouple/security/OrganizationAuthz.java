@@ -21,8 +21,15 @@ public class OrganizationAuthz {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof CustomUserDetails userDetails) {
+        if (principal instanceof AuthPrincipal userDetails) {
             return userDetails.getId();
+        }
+        if (principal.getClass().getName().contains("AuthPrincipal")) {
+            try {
+                return (Integer) principal.getClass().getMethod("getId").invoke(principal);
+            } catch (Exception e) {
+                throw new IllegalStateException("Cannot extract ID from AuthPrincipal proxy", e);
+            }
         }
         throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
     }
