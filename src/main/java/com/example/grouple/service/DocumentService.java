@@ -66,14 +66,12 @@ public class DocumentService {
     }
 
     // 단건 조회
-    public DocumentReadDetailResponse getDocument(DocumentReadDetailRequest request) {
+    public DocumentReadDetailResponse getDocument(Integer orgId, Integer docId) {
 
-        Document doc = documentRepository.findByIdAndOrganizationId(
-                        request.getDocumentId(),
-                        request.getOrganizationId()
-                )
+        Document doc = documentRepository.findByIdAndOrganizationId(docId, orgId)
                 .orElseThrow(() -> new IllegalArgumentException("문서 없음"));
 
+        // 조직 멤버인지 체크
         if (!orgAuthz.canReadOrg(doc.getOrganization().getId())) {
             throw new IllegalStateException("조직 멤버가 아니어서 문서 조회 불가");
         }
@@ -94,15 +92,16 @@ public class DocumentService {
     }
 
     // 목록 조회
-    public DocumentReadListResponse listDocuments(DocumentReadListRequest request) {
+    public DocumentReadListResponse listDocuments(Integer orgId, Integer userId) {
 
-        if (!orgAuthz.canReadOrg(request.getOrganizationId())) {
+        // 조직 멤버인지 체크
+        if (!orgAuthz.canReadOrg(orgId)) {
             throw new IllegalStateException("조직 멤버가 아니어서 문서 목록 조회 불가");
         }
 
-        List<Document> docs = request.getUserId() != null
-                ? documentRepository.findByOrganizationIdAndUserId(request.getOrganizationId(), request.getUserId())
-                : documentRepository.findByOrganizationId(request.getOrganizationId());
+        List<Document> docs = (userId != null)
+                ? documentRepository.findByOrganizationIdAndUserId(orgId, userId)
+                : documentRepository.findByOrganizationId(orgId);
 
         List<DocumentReadListResponse.DocumentSummary> summaries = docs.stream()
                 .map(d -> new DocumentReadListResponse.DocumentSummary(
@@ -117,6 +116,8 @@ public class DocumentService {
 
         return new DocumentReadListResponse(summaries);
     }
+
+
 
     // 문서 수정
     public DocumentUpdateResponse updateDocument(DocumentUpdateRequest request) {
@@ -151,12 +152,13 @@ public class DocumentService {
     }
 
     // 문서 삭제
-    public DocumentDeleteResponse deleteDocument(DocumentDeleteRequest request) {
+    public DocumentDeleteResponse deleteDocument(Integer orgId, Integer docId) {
 
-        Document doc = documentRepository.findById(request.getDocumentId())
+        Document doc = documentRepository.findById(docId)
                 .orElseThrow(() -> new IllegalArgumentException("문서 없음"));
 
-        if (!orgAuthz.canModifyDocument(doc.getOrganization().getId(), doc.getUser().getId())) {
+        // 권한 체크
+        if (!orgAuthz.canModifyDocument(orgId, doc.getUser().getId())) {
             throw new IllegalStateException("문서 삭제 권한 없음");
         }
 

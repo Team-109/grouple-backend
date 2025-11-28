@@ -31,11 +31,7 @@ public class OrgDocumentController {
             @PathVariable Integer orgId,
             @PathVariable Integer docId
     ) {
-        DocumentReadDetailRequest request = new DocumentReadDetailRequest();
-        request.setOrganizationId(orgId);
-        request.setDocumentId(docId);
-
-        return documentService.getDocument(request);
+        return documentService.getDocument(orgId, docId);
     }
 
     // 목록 조회
@@ -44,11 +40,8 @@ public class OrgDocumentController {
             @PathVariable Integer orgId,
             @RequestParam(required = false) Integer userId
     ) {
-        DocumentReadListRequest request = new DocumentReadListRequest();
-        request.setOrganizationId(orgId);
-        request.setUserId(userId);
 
-        return documentService.listDocuments(request);
+        return documentService.listDocuments(orgId, userId);
     }
 
     // 문서 수정
@@ -69,10 +62,6 @@ public class OrgDocumentController {
             @PathVariable Integer orgId,
             @PathVariable Integer docId
     ) {
-        DocumentDeleteRequest request = new DocumentDeleteRequest();
-        request.setOrganizationId(orgId);
-        request.setDocumentId(docId);
-
-        return documentService.deleteDocument(request);
+        return documentService.deleteDocument(orgId, docId);
     }
 }
