@@ -1,6 +1,7 @@
 package com.example.grouple.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,4 +45,17 @@ public class Receipt {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
+
+    @Builder
+    public Receipt(String type, Integer amount, String category, String description,
+                   LocalDate date, String image, User user, Organization organization) {
+        this.type = type;
+        this.amount = amount;
+        this.category = category;
+        this.description = description;
+        this.date = date;
+        this.image = image;
+        this.user = user;
+        this.organization = organization;
+    }
 }
