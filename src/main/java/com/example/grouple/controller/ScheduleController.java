@@ -5,11 +5,13 @@ import com.example.grouple.dto.schedule.request.ScheduleModifyRequest;
 import com.example.grouple.dto.schedule.response.ScheduleListResponse;
 import com.example.grouple.dto.schedule.response.ScheduleResponse;
 import com.example.grouple.service.ScheduleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "09. 조직 일정")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/organizations/{orgId}/schedules")
