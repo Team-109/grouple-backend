@@ -1,8 +1,10 @@
 package com.example.grouple.dto.document.request;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class DocumentUpdateRequest {
     private Integer documentId;
     private Integer organizationId;
@@ -12,3 +14,5 @@ public class DocumentUpdateRequest {
     private String type;
     private Integer size;
 }
+
+

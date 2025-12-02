@@ -1,5 +1,6 @@
 package com.example.grouple.dto.document.response;
 
+import jakarta.persistence.Column;
 import lombok.*;
 
 import java.time.Instant;
