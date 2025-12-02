@@ -96,7 +96,6 @@ public class SecurityConfig {
                 mvc.pattern("/auth/login"),
                 mvc.pattern("/auth/register"),
                 mvc.pattern("/auth/refresh"),
-                mvc.pattern("/auth/me"),
                 mvc.pattern("/auth/check_id")
         };
     }
