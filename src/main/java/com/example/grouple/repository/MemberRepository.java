@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface MemberRepository extends JpaRepository<Member, MemberId> {
     List<Member> findAllByOrganization_Id(Integer orgId);
+    boolean existsById_OrgIdAndId_UserId(Integer organizationId, Integer userId);
 }
