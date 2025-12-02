@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,5 +63,7 @@ public class Organization {
     @LastModifiedDate
     @Column(nullable = false)
     private Instant updatedAt;
+
+
 }
 
