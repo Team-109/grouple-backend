@@ -1,6 +1,7 @@
 package com.example.grouple.controller;
 
 import com.example.grouple.api.ApiResponse;
+import com.example.grouple.common.UnauthorizedException;
 import com.example.grouple.dto.user.request.UserDeleteRequest;
 import com.example.grouple.dto.user.request.UserImageModifyForm;
 import com.example.grouple.dto.user.request.UserModifyRequest;
@@ -9,12 +10,10 @@ import com.example.grouple.service.UserService;
 import com.example.grouple.security.AuthPrincipal;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "02. 유저")
 @RestController
@@ -65,7 +64,7 @@ public class UserController {
 
     private Integer requireUserId(AuthPrincipal principal) {
         if (principal == null || principal.getId() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 정보를 확인할 수 없습니다.");
+            throw new UnauthorizedException("인증 정보를 확인할 수 없습니다.");
         }
         return principal.getId();
     }
