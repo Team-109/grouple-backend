@@ -1,170 +1,105 @@
 package com.example.grouple.service;
 
-import com.example.grouple.dto.document.request.*;
-import com.example.grouple.dto.document.response.*;
+import com.example.grouple.dto.document.request.DocumentCreateRequest;
+import com.example.grouple.dto.document.request.DocumentUpdateRequest;
+import com.example.grouple.dto.document.response.DocumentReadDetailResponse;
 import com.example.grouple.entity.Document;
 import com.example.grouple.entity.Organization;
 import com.example.grouple.entity.User;
 import com.example.grouple.repository.DocumentRepository;
 import com.example.grouple.repository.OrganizationRepository;
 import com.example.grouple.repository.UserRepository;
-import com.example.grouple.security.OrganizationAuthz;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class DocumentService {
 
     private final DocumentRepository documentRepository;
     private final OrganizationRepository organizationRepository;
     private final UserRepository userRepository;
-    private final OrganizationAuthz orgAuthz;
 
-    // 문서 생성
-    public DocumentCreateResponse createDocument(DocumentCreateRequest request) {
+    // 1. 문서 생성
+    @Transactional
+    public DocumentReadDetailResponse createDocument(Integer organizationId, Integer userId, DocumentCreateRequest request) {
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new EntityNotFoundException("Organization not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        // 조직 멤버인지 확인
-        if (!orgAuthz.canReadOrg(request.getOrganizationId())) {
-            throw new IllegalStateException("조직 멤버가 아니어서 문서 생성 불가");
-        }
+        Document document = new Document();
+        document.setTitle(request.getTitle());
+        document.setDescription(request.getDescription());
+        document.setName(request.getName());
+        document.setType(request.getType());
+        document.setSize(request.getSize());
+        document.setOrganization(organization);
+        document.setUser(user);
 
-        Organization org = organizationRepository.findById(request.getOrganizationId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 조직"));
+        Document saved = documentRepository.save(document);
 
-        User user = userRepository.findById(orgAuthz.authId())
-                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
-
-        Document doc = new Document();
-        doc.setTitle(request.getTitle());
-        doc.setDescription(request.getDescription());
-        doc.setName(request.getName());
-        doc.setType(request.getType());
-        doc.setSize(request.getSize());
-        doc.setOrganization(org);
-        doc.setUser(user);
-
-        Document saved = documentRepository.save(doc);
-
-        return new DocumentCreateResponse(
-                saved.getId(),
-                saved.getTitle(),
-                saved.getDescription(),
-                saved.getName(),
-                saved.getType(),
-                saved.getSize(),
-                saved.getUser().getUsername(),
-                saved.getOrganization().getId(),
-                saved.getCreatedAt(),
-                saved.getUpdatedAt()
-        );
+        return toResponse(saved);
     }
 
-    // 단건 조회
-    public DocumentReadDetailResponse getDocument(Integer orgId, Integer docId) {
-
-        Document doc = documentRepository.findByIdAndOrganizationId(docId, orgId)
-                .orElseThrow(() -> new IllegalArgumentException("문서 없음"));
-
-        // 조직 멤버인지 체크
-        if (!orgAuthz.canReadOrg(doc.getOrganization().getId())) {
-            throw new IllegalStateException("조직 멤버가 아니어서 문서 조회 불가");
-        }
-
-        return new DocumentReadDetailResponse(
-                doc.getId(),
-                doc.getTitle(),
-                doc.getDescription(),
-                doc.getName(),
-                doc.getType(),
-                doc.getSize(),
-                doc.getUser().getUsername(),
-                doc.getOrganization().getId(),
-                doc.getOrganization().getName(),
-                doc.getCreatedAt(),
-                doc.getUpdatedAt()
-        );
+    // 2. 단일 문서 조회
+    @Transactional(readOnly = true)
+    public DocumentReadDetailResponse getDocument(Integer organizationId, Integer documentId) {
+        Document document = documentRepository.findByIdAndOrganizationId(documentId, organizationId)
+                .orElseThrow(() -> new EntityNotFoundException("Document not found"));
+        return toResponse(document);
     }
 
-    // 목록 조회
-    public DocumentReadListResponse listDocuments(Integer orgId, Integer userId) {
-
-        // 조직 멤버인지 체크
-        if (!orgAuthz.canReadOrg(orgId)) {
-            throw new IllegalStateException("조직 멤버가 아니어서 문서 목록 조회 불가");
-        }
-
-        List<Document> docs = (userId != null)
-                ? documentRepository.findByOrganizationIdAndUserId(orgId, userId)
-                : documentRepository.findByOrganizationId(orgId);
-
-        List<DocumentReadListResponse.DocumentSummary> summaries = docs.stream()
-                .map(d -> new DocumentReadListResponse.DocumentSummary(
-                        d.getId(),
-                        d.getTitle(),
-                        d.getName(),
-                        d.getUser().getUsername(),
-                        d.getCreatedAt(),
-                        d.getUpdatedAt()
-                ))
-                .collect(Collectors.toList());
-
-        return new DocumentReadListResponse(summaries);
+    // 3. 문서 목록 조회 (페이징)
+    @Transactional(readOnly = true)
+    public Page<DocumentReadDetailResponse> listDocuments(Integer organizationId, Pageable pageable) {
+        Page<Document> page = documentRepository.findByOrganizationIdOrderByCreatedAtDesc(organizationId, pageable);
+        return page.map(this::toResponse);
     }
 
+    // 4. 문서 업데이트
+    @Transactional
+    public DocumentReadDetailResponse updateDocument(Integer organizationId, Integer documentId, DocumentUpdateRequest request) {
+        Document document = documentRepository.findByIdAndOrganizationId(documentId, organizationId)
+                .orElseThrow(() -> new EntityNotFoundException("Document not found"));
 
+        if (request.getTitle() != null) document.setTitle(request.getTitle());
+        if (request.getDescription() != null) document.setDescription(request.getDescription());
+        if (request.getName() != null) document.setName(request.getName());
+        if (request.getType() != null) document.setType(request.getType());
+        if (request.getSize() != null) document.setSize(request.getSize());
 
-    // 문서 수정
-    public DocumentUpdateResponse updateDocument(DocumentUpdateRequest request) {
-
-        Document doc = documentRepository.findById(request.getDocumentId())
-                .orElseThrow(() -> new IllegalArgumentException("문서 없음"));
-
-        if (!orgAuthz.canModifyDocument(doc.getOrganization().getId(), doc.getUser().getId())) {
-            throw new IllegalStateException("문서 수정 권한 없음");
-        }
-
-        doc.setTitle(request.getTitle());
-        doc.setDescription(request.getDescription());
-        doc.setName(request.getName());
-        doc.setType(request.getType());
-        doc.setSize(request.getSize());
-
-        Document updated = documentRepository.save(doc);
-
-        return new DocumentUpdateResponse(
-                updated.getId(),
-                updated.getTitle(),
-                updated.getDescription(),
-                updated.getName(),
-                updated.getType(),
-                updated.getSize(),
-                updated.getUser().getUsername(),
-                updated.getOrganization().getId(),
-                updated.getCreatedAt(),
-                updated.getUpdatedAt()
-        );
+        Document saved = documentRepository.save(document);
+        return toResponse(saved);
     }
 
-    // 문서 삭제
-    public DocumentDeleteResponse deleteDocument(Integer orgId, Integer docId) {
+    // 5. 문서 삭제
+    @Transactional
+    public void deleteDocument(Integer organizationId, Integer documentId) {
+        Document document = documentRepository.findByIdAndOrganizationId(documentId, organizationId)
+                .orElseThrow(() -> new EntityNotFoundException("Document not found"));
+        documentRepository.delete(document);
+    }
 
-        Document doc = documentRepository.findById(docId)
-                .orElseThrow(() -> new IllegalArgumentException("문서 없음"));
-
-        // 권한 체크
-        if (!orgAuthz.canModifyDocument(orgId, doc.getUser().getId())) {
-            throw new IllegalStateException("문서 삭제 권한 없음");
-        }
-
-        documentRepository.delete(doc);
-
-        return new DocumentDeleteResponse(doc.getId(), "삭제 완료");
+    // Entity -> DTO 변환
+    private DocumentReadDetailResponse toResponse(Document document) {
+        return DocumentReadDetailResponse.builder()
+                .documentId(document.getId())
+                .title(document.getTitle())
+                .description(document.getDescription())
+                .name(document.getName())
+                .type(document.getType())
+                .size(document.getSize())
+                .createdAt(document.getCreatedAt())
+                .updatedAt(document.getUpdatedAt())
+                .username(document.getUser() != null ? document.getUser().getUsername() : null)
+                .organizationId(document.getOrganization() != null ? document.getOrganization().getId() : null)
+                .organizationName(document.getOrganization() != null ? document.getOrganization().getName() : null)
+                .build();
     }
 
 }
