@@ -1,6 +1,7 @@
 package com.example.grouple.controller;
 
 import com.example.grouple.api.ApiResponse;
+import com.example.grouple.common.ConflictException;
 import com.example.grouple.dto.auth.request.LoginRequest;
 import com.example.grouple.dto.auth.request.RefreshTokenRequest;
 import com.example.grouple.dto.auth.request.RegisterRequest;
@@ -18,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 
@@ -72,7 +72,7 @@ class AuthControllerTests {
     void shouldThrowWhenUsernameTaken() {
         when(userService.existsByUsername("taken")).thenReturn(true);
 
-        assertThrows(ResponseStatusException.class, () -> authController.checkIdAvailable("taken"));
+        assertThrows(ConflictException.class, () -> authController.checkIdAvailable("taken"));
     }
 
     @Test
@@ -106,7 +106,7 @@ class AuthControllerTests {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         ApiResponse<?> body = (ApiResponse<?>) result.getBody();
         Assertions.assertNotNull(body);
-        assertThat(body.getMessage()).isEqualTo("Authenticated");
+        assertThat(body.getMessage()).isEqualTo("로그인된 사용자 아이디: tester");
         verify(userService).getUserById(1);
     }
 
