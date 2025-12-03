@@ -8,11 +8,16 @@ import com.example.grouple.entity.Organization;
 import com.example.grouple.entity.Schedule;
 import com.example.grouple.entity.User;
 import com.example.grouple.repository.ScheduleRepository;
-import com.example.grouple.repository.UserRepository; // 없으면 나중에 만들거나 주석 처리해도 됨
+import com.example.grouple.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,32 +25,43 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
-    private final UserRepository userRepository;   // 없으면 일단 주석 처리해두고 알려줘!
+    private final UserRepository userRepository;
 
-    // 일정 생성
-    public ScheduleResponse createSchedule(Integer orgId, ScheduleCreateRequest request) {
+    /**
+     * 일정 생성
+     * - userId : 요청 보낸 사용자 ID (조직 서비스랑 패턴 맞춤)
+     * - orgId  : 일정이 속한 조직 ID
+     */
+    public ScheduleResponse createSchedule(@P("userId") Integer userId,
+                                           Integer orgId,
+                                           ScheduleCreateRequest request) {
 
+        // 1) 유효성 검사
         if (request.getEndTime().isBefore(request.getStartTime())) {
             throw new IllegalArgumentException("end_time must be after start_time");
         }
 
+        // 2) 사용자 조회 (조직 서비스랑 똑같이 userRepo에서 findById)
+        User user = userRepository.findById(userId)
+                .orElseThrow(NoSuchElementException::new);
+
+        // 3) 엔티티 생성
         Schedule schedule = new Schedule();
         schedule.setTitle(request.getTitle());
         schedule.setDescription(request.getDescription());
         schedule.setStartTime(request.getStartTime());
         schedule.setEndTime(request.getEndTime());
-
-        // TODO: 나중에 JWT에서 로그인 유저 꺼내서 사용
-        User user = userRepository.findById(1)
-                .orElseThrow(() -> new IllegalStateException("test user not found"));
         schedule.setUser(user);
 
-        // 조직은 id만 꽂아서 연관관계 설정
+        // 조직은 id만 세팅해서 연관 관계만 맺어줌
         Organization organization = new Organization();
         organization.setId(orgId);
         schedule.setOrganization(organization);
 
+        // 4) 저장
         Schedule saved = scheduleRepository.save(schedule);
+
+        // 5) 응답 DTO 변환
         return toResponse(saved);
     }
 
@@ -109,7 +125,7 @@ public class ScheduleService {
                 .author(
                         ScheduleResponse.Author.builder()
                                 .id(s.getUser().getId())
-                                .username(s.getUser().getUsername()) // User 엔티티 필드명에 맞게 수정
+                                .username(s.getUser().getUsername())
                                 .build()
                 )
                 .build();
