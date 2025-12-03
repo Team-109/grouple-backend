@@ -87,7 +87,7 @@ public class ScheduleController {
     // 🔒 AuthPrincipal에서 userId 강제 추출 (OrgController랑 동일 패턴)
     private Integer requireUserId(AuthPrincipal principal) {
         if (principal == null || principal.getId() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 정보를 확인할 수 없습니다.");
+            throw new UnauthorizedException("인증 정보를 확인할 수 없습니다.");
         }
         return principal.getId();
     }
