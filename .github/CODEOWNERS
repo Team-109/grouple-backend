@@ -1,0 +1,67 @@
+/* @iosif2
+
+# Auth feature
+src/main/java/com/example/grouple/dto/auth/** @iosif2 @rmatj035
+src/main/java/com/example/grouple/controller/AuthController.java @iosif2 @rmatj035
+src/main/java/com/example/grouple/service/AuthService.java @iosif2 @rmatj035
+src/main/java/com/example/grouple/service/JwtProvider.java @iosif2 @rmatj035
+src/main/java/com/example/grouple/security/** @iosif2 @rmatj035
+src/test/java/com/example/grouple/controller/AuthControllerTests.java @iosif2 @rmatj035
+
+# User feature
+src/main/java/com/example/grouple/dto/user/** @iosif2
+src/main/java/com/example/grouple/controller/UserController.java @iosif2
+src/main/java/com/example/grouple/entity/User.java @iosif2
+src/main/java/com/example/grouple/service/UserService.java @iosif2
+src/main/java/com/example/grouple/repository/UserRepository.java @iosif2
+src/test/java/com/example/grouple/controller/UserControllerTests.java @iosif2
+src/test/java/com/example/grouple/entity/UserTests.java @iosif2
+
+# Organization feature
+src/main/java/com/example/grouple/dto/organization/** @iosif2
+src/main/java/com/example/grouple/controller/OrganizationController.java @iosif2
+src/main/java/com/example/grouple/entity/Organization.java @iosif2
+src/main/java/com/example/grouple/service/OrganizationService.java @iosif2
+src/main/java/com/example/grouple/repository/OrganizationRepository.java @iosif2
+src/test/java/com/example/grouple/controller/OrganizationControllerTests.java @iosif2
+src/test/java/com/example/grouple/entity/OrganizationTests.java @iosif2
+
+# Member feature
+src/main/java/com/example/grouple/entity/Member.java @iosif2 @namutong @yxxnsxyxung
+src/main/java/com/example/grouple/entity/id/MemberId.java @iosif2 @namutong @yxxnsxyxung
+src/main/java/com/example/grouple/repository/MemberRepository.java @iosif2 @namutong @yxxnsxyxung
+src/test/java/com/example/grouple/entity/MemberTests.java @iosif2 @namutong @yxxnsxyxung
+src/test/java/com/example/grouple/entity/id/MemberIdTests.java @iosif2 @namutong @yxxnsxyxung
+
+# Announcement feature
+src/main/java/com/example/grouple/dto/announcement/** @brad36i
+src/main/java/com/example/grouple/controller/AnnouncementController.java @brad36i
+src/main/java/com/example/grouple/entity/Announcement.java @brad36i
+src/main/java/com/example/grouple/repository/AnnouncementRepository.java @brad36i
+src/test/java/com/example/grouple/controller/AnnouncementControllerTests.java @brad36i
+src/test/java/com/example/grouple/entity/AnnouncementTests.java @brad36i
+
+# Document feature
+src/main/java/com/example/grouple/dto/document/** @rmatj035
+src/main/java/com/example/grouple/controller/DocumentController.java @rmatj035
+src/main/java/com/example/grouple/entity/Document.java @rmatj035
+src/main/java/com/example/grouple/repository/DocumentRepository.java @rmatj035
+src/test/java/com/example/grouple/controller/DocumentControllerTests.java @rmatj035
+src/test/java/com/example/grouple/entity/DocumentTests.java @rmatj035
+
+# Receipt feature
+src/main/java/com/example/grouple/dto/receipt/** @namutong
+src/main/java/com/example/grouple/controller/ReceiptController.java @namutong
+src/main/java/com/example/grouple/entity/Receipt.java @namutong
+src/main/java/com/example/grouple/repository/ReceiptRepository.java @namutong
+src/test/java/com/example/grouple/controller/ReceiptControllerTests.java @namutong
+src/test/java/com/example/grouple/entity/ReceiptTests.java @namutong
+
+# Schedule feature
+src/main/java/com/example/grouple/dto/schedule/** @yxxnsxyxung
+src/main/java/com/example/grouple/controller/ScheduleController.java @yxxnsxyxung
+src/main/java/com/example/grouple/entity/Schedule.java @yxxnsxyxung
+src/main/java/com/example/grouple/repository/ScheduleRepository.java @yxxnsxyxung
+src/test/java/com/example/grouple/controller/ScheduleControllerTests.java @yxxnsxyxung
+src/test/java/com/example/grouple/entity/ScheduleTests.java @yxxnsxyxung
+

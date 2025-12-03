@@ -1,25 +1,21 @@
 package com.example.grouple.controller;
 
 import com.example.grouple.api.ApiResponse;
+import com.example.grouple.common.ConflictException;
+import com.example.grouple.common.UnauthorizedException;
 import com.example.grouple.dto.auth.request.LoginRequest;
 import com.example.grouple.dto.auth.request.RegisterRequest;
-import com.example.grouple.dto.auth.response.LoginResponse;
-import com.example.grouple.dto.auth.response.RegisterResponse;
-import com.example.grouple.dto.auth.response.UserInfoResponse;
-import com.example.grouple.dto.user.request.UserModifyRequest;
-import com.example.grouple.dto.user.response.UserModifyResponse;
+import com.example.grouple.dto.auth.request.RefreshTokenRequest;
+import com.example.grouple.security.AuthPrincipal;
 import com.example.grouple.service.AuthService;
 import com.example.grouple.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-@Tag(name = "01. Auth", description = "인증 관련 API")
+@Tag(name = "01. 인증")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -33,16 +29,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) throws Exception {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
         var res = userService.register(request);
         return ResponseEntity.ok(ApiResponse.success(res));
     }
 
-    @GetMapping("/check_id")
-    public ResponseEntity<?> checkIdAvailable(@RequestParam String username) throws Exception {
+    @GetMapping("/check-id")
+    public ResponseEntity<?> checkIdAvailable(@RequestParam String username) {
         var found = userService.existsByUsername(username);
         if (found) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is already taken");
+            throw new ConflictException("Username is already taken");
         } else {
             return ResponseEntity.ok(ApiResponse.success("Username " + username + " is available"));
         }
@@ -54,11 +50,23 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(res));
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody RefreshTokenRequest request) throws Exception {
+        var res = authService.refresh(request.getRefreshToken());
+        return ResponseEntity.ok(ApiResponse.success(res));
+    }
+
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal(expression = "id") Integer meId) throws Exception {
-        userService.getUserById(meId);
-        return ResponseEntity.ok(ApiResponse.success("Authenticated"));
+    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal AuthPrincipal principal) {
+        var res = userService.getUserById(requireUserId(principal));
+        return ResponseEntity.ok(ApiResponse.success("로그인된 사용자 아이디: " + res.getUsername()));
+    }
+
+    private Integer requireUserId(AuthPrincipal principal) {
+        if (principal == null || principal.getId() == null) {
+            throw new UnauthorizedException("인증 정보를 확인할 수 없습니다.");
+        }
+        return principal.getId();
     }
 }
-
