@@ -14,7 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-@Tag(name = "04. 일정")
+@Tag(name = "09. 조직 일정")
 @RestController
 @RequestMapping("/organizations/{orgId}/schedules")
 public class ScheduleController {
