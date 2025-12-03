@@ -82,9 +82,9 @@ class UserControllerTests {
         UserImageModifyForm form = new UserImageModifyForm();
         form.setImage("profile.png");
         UserImageModifyResponse response = UserImageModifyResponse.builder()
-                                                                  .image("profile.png")
-                                                                  .updatedAt(Instant.now())
-                                                                  .build();
+                .image("profile.png")
+                .updatedAt(Instant.now())
+                .build();
         when(userService.updateImage(1, form)).thenReturn(response);
 
         ResponseEntity<?> result = controller.updateUserPhoto(new AuthPrincipal(1, "tester"), form);
