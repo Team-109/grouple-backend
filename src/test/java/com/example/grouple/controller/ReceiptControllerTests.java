@@ -22,8 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.server.ResponseStatusException;
+import com.example.grouple.common.ForbiddenException;
+import com.example.grouple.common.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -136,7 +136,7 @@ class ReceiptControllerTests {
         when(organizationRepository.findById(MOCK_ORG_ID)).thenReturn(Optional.empty());
 
         // WHEN & THEN
-        assertThrows(ResponseStatusException.class, () ->
+        assertThrows(NotFoundException.class, () ->
                 receiptService.createReceipt(MOCK_ORG_ID, MOCK_USER_ID, request));
 
         // User Repository는 호출되지 않았는지 검증
@@ -176,7 +176,7 @@ class ReceiptControllerTests {
         when(memberRepository.existsById_OrgIdAndId_UserId(MOCK_ORG_ID, MOCK_USER_ID)).thenReturn(false);
 
         // WHEN & THEN
-        assertThrows(AccessDeniedException.class, () ->
+        assertThrows(ForbiddenException.class, () ->
                 receiptService.viewReceipt(MOCK_ORG_ID, MOCK_RECEIPT_ID, MOCK_USER_ID));
     }
 
@@ -225,7 +225,7 @@ class ReceiptControllerTests {
 
         // WHEN & THEN
         // otherUserId로 수정 시도
-        assertThrows(AccessDeniedException.class, () ->
+        assertThrows(ForbiddenException.class, () ->
                 receiptService.updateReceipt(MOCK_ORG_ID, MOCK_RECEIPT_ID, otherUserId, request));
     }
 
@@ -260,7 +260,7 @@ class ReceiptControllerTests {
         // (mockReceipt의 Organization ID는 MOCK_ORG_ID=1)
 
         // WHEN & THEN
-        assertThrows(ResponseStatusException.class, () ->
+        assertThrows(NotFoundException.class, () ->
                 receiptService.deleteReceipt(wrongOrgId, MOCK_RECEIPT_ID, MOCK_USER_ID));
 
         // delete() 메서드는 호출되지 않았는지 검증

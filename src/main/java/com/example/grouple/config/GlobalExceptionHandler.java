@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), e.getMessage()));
     }
 
-    @ExceptionHandler({ForbiddenException.class, AuthorizationDeniedException.class})
+    @ExceptionHandler({ForbiddenException.class, AuthorizationDeniedException.class, org.springframework.security.access.AccessDeniedException.class})
     public ResponseEntity<ApiResponse<Void>> handleForbidden(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN.value(), e.getMessage()));

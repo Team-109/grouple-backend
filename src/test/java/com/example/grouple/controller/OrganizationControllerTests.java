@@ -48,7 +48,7 @@ class OrganizationControllerTests {
 
         ResponseEntity<?> result = controller.createOrg(new AuthPrincipal(10, "owner"), request);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         ApiResponse<?> body = (ApiResponse<?>) result.getBody();
         Assertions.assertNotNull(body);
         assertThat(body.getData()).isEqualTo(response);
@@ -145,10 +145,8 @@ class OrganizationControllerTests {
 
         ResponseEntity<?> result = controller.deleteOrg(new AuthPrincipal(10, "owner"), 1);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        ApiResponse<?> body = (ApiResponse<?>) result.getBody();
-        Assertions.assertNotNull(body);
-        assertThat(body.getData()).isEqualTo(response);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(result.getBody()).isNull();
         verify(organizationService).deleteOrg(10, 1);
     }
 }

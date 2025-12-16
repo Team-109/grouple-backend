@@ -74,10 +74,8 @@ class OrgMemberControllerTests {
 
         ResponseEntity<?> result = controller.deleteMember(new AuthPrincipal(10, "owner"), 1, 5, request);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        ApiResponse<?> body = (ApiResponse<?>) result.getBody();
-        Assertions.assertNotNull(body);
-        assertThat(body.getData()).isEqualTo(response);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(result.getBody()).isNull();
         verify(memberService).deleteMember(10, 1, 5, request);
     }
 }

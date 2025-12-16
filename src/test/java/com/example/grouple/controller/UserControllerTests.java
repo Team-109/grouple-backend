@@ -102,10 +102,8 @@ class UserControllerTests {
 
         ResponseEntity<?> result = controller.deleteUser(new AuthPrincipal(1, "tester"), request);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        ApiResponse<?> body = (ApiResponse<?>) result.getBody();
-        Assertions.assertNotNull(body);
-        assertThat(body.getMessage()).contains("삭제");
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(result.getBody()).isNull();
         verify(userService).deleteUser(1, request);
     }
 
