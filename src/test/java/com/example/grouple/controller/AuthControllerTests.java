@@ -48,7 +48,7 @@ class AuthControllerTests {
 
         ResponseEntity<?> result = authController.registerUser(request);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         ApiResponse<?> body = (ApiResponse<?>) result.getBody();
         Assertions.assertNotNull(body);
         assertThat(body.getData()).isEqualTo(response);
