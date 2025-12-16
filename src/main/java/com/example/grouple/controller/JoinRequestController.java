@@ -11,12 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "05. 조직 가입 요청")
 @RestController
 @RequestMapping("/join-requests")
-public class JoinRequestController {
+public class JoinRequestController extends BaseController {
 
     private final JoinRequestService joinRequestService;
 
@@ -30,13 +29,6 @@ public class JoinRequestController {
                                                @RequestParam("org_code") String orgCode,
                                                @Valid @RequestBody(required = false) JoinRequestCreateRequest request) {
         var res = joinRequestService.createJoinRequest(requireUserId(principal), orgCode, request);
-        return ResponseEntity.ok(ApiResponse.success(res));
-    }
-
-    private Integer requireUserId(AuthPrincipal principal) {
-        if (principal == null || principal.getId() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 정보를 확인할 수 없습니다.");
-        }
-        return principal.getId();
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(res));
     }
 }

@@ -1,7 +1,10 @@
 package com.example.grouple.config;
 
 import com.example.grouple.api.ApiResponse;
+import com.example.grouple.common.BadRequestException;
 import com.example.grouple.common.ConflictException;
+import com.example.grouple.common.ForbiddenException;
+import com.example.grouple.common.NotFoundException;
 import com.example.grouple.common.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,25 +17,28 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadRequest(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(ApiResponse.error(400, "요청 파라미터가 잘못됐습니다."));
+    @ExceptionHandler({BadRequestException.class, IllegalArgumentException.class})
+    public ResponseEntity<ApiResponse<Void>> handleBadRequest(RuntimeException e) {
+        return ResponseEntity.badRequest().body(ApiResponse.error(400, e.getMessage()));
     }
 
-    @ExceptionHandler({ UnauthorizedException.class, org.springframework.security.authentication.BadCredentialsException.class})
+    @ExceptionHandler({UnauthorizedException.class, org.springframework.security.authentication.BadCredentialsException.class})
     public ResponseEntity<ApiResponse<Void>> handleUnauthorized(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증되지 않은 접근입니다."));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), e.getMessage()));
     }
 
-    @ExceptionHandler({ AuthorizationDeniedException.class})
-    public ResponseEntity<ApiResponse<Void>> handleAuthorizationDenied(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), e.getMessage()));
+    @ExceptionHandler({ForbiddenException.class, AuthorizationDeniedException.class})
+    public ResponseEntity<ApiResponse<Void>> handleForbidden(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(HttpStatus.FORBIDDEN.value(), e.getMessage()));
     }
 
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNotFound(NoSuchElementException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "요청한 정보를 찾을 수 없습니다."));
+    @ExceptionHandler({NotFoundException.class, NoSuchElementException.class})
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(RuntimeException e) {
+        String message = e.getMessage() != null ? e.getMessage() : "요청한 정보를 찾을 수 없습니다.";
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), message));
     }
 
     @ExceptionHandler(ConflictException.class)
@@ -43,6 +49,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleServer(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
     }
 }
