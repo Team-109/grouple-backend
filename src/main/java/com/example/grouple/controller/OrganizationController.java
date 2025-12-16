@@ -12,12 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "03. 조직")
 @RestController
 @RequestMapping("/organizations")
-public class OrganizationController {
+public class OrganizationController extends BaseController {
 
     private final OrganizationService orgService;
 
@@ -29,7 +28,7 @@ public class OrganizationController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createOrg(@AuthenticationPrincipal AuthPrincipal principal, @Valid @RequestBody OrgCreateRequest req) {
         var res = orgService.createOrg(requireUserId(principal), req);
-        return ResponseEntity.ok(ApiResponse.success(res));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(res));
     }
 
     @GetMapping
@@ -59,14 +58,7 @@ public class OrganizationController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteOrg(@AuthenticationPrincipal AuthPrincipal principal,
                                        @PathVariable Integer orgId) {
-        var res = orgService.deleteOrg(requireUserId(principal), orgId);
-        return ResponseEntity.ok(ApiResponse.success(res));
-    }
-
-    private Integer requireUserId(AuthPrincipal principal) {
-        if (principal == null || principal.getId() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 정보를 확인할 수 없습니다.");
-        }
-        return principal.getId();
+        orgService.deleteOrg(requireUserId(principal), orgId);
+        return ResponseEntity.noContent().build();
     }
 }
