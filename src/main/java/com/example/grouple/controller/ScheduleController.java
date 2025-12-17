@@ -12,12 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "09. 조직 일정")
 @RestController
 @RequestMapping("/organizations/{orgId}/schedules")
-public class ScheduleController {
+public class ScheduleController extends BaseController {
 
     private final ScheduleService scheduleService;
 
@@ -25,7 +24,6 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
-    // ✅ 일정 생성
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createSchedule(
@@ -38,7 +36,6 @@ public class ScheduleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(res));
     }
 
-    // ✅ 일정 목록 조회 (페이징)
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getSchedules(
@@ -50,7 +47,6 @@ public class ScheduleController {
         return ResponseEntity.ok(ApiResponse.success(res));
     }
 
-    // ✅ 일정 단건 조회
     @GetMapping("/{scheduleId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getSchedule(
@@ -61,7 +57,6 @@ public class ScheduleController {
         return ResponseEntity.ok(ApiResponse.success(res));
     }
 
-    // ✅ 일정 수정
     @PatchMapping("/{scheduleId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> modifySchedule(
@@ -73,7 +68,6 @@ public class ScheduleController {
         return ResponseEntity.ok(ApiResponse.success(res));
     }
 
-    // ✅ 일정 삭제
     @DeleteMapping("/{scheduleId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteSchedule(
@@ -82,13 +76,5 @@ public class ScheduleController {
     ) {
         scheduleService.deleteSchedule(orgId, scheduleId);
         return ResponseEntity.noContent().build();
-    }
-
-    // 🔒 AuthPrincipal에서 userId 강제 추출 (OrgController랑 동일 패턴)
-    private Integer requireUserId(AuthPrincipal principal) {
-        if (principal == null || principal.getId() == null) {
-            throw new UnauthorizedException("인증 정보를 확인할 수 없습니다.");
-        }
-        return principal.getId();
     }
 }

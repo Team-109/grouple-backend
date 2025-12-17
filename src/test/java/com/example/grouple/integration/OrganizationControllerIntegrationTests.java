@@ -54,7 +54,7 @@ class OrganizationControllerIntegrationTests extends IntegrationTestSupport {
                         .with(auth(owner))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.data.name").value("Integration Org"))
                 .andExpect(jsonPath("$.data.owner_id").value(owner.getId()));
@@ -95,10 +95,7 @@ class OrganizationControllerIntegrationTests extends IntegrationTestSupport {
 
         mockMvc.perform(withApiServletPath(delete(apiPath("/organizations/{orgId}"), existing.getId()))
                         .with(auth(owner)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.data.code").value(existing.getCode()))
-                .andExpect(jsonPath("$.data.deletedAt").isNotEmpty());
+                .andExpect(status().isNoContent());
 
         assertThat(organizationRepository.existsById(existing.getId())).isFalse();
     }

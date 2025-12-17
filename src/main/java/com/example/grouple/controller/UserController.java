@@ -1,7 +1,6 @@
 package com.example.grouple.controller;
 
 import com.example.grouple.api.ApiResponse;
-import com.example.grouple.common.UnauthorizedException;
 import com.example.grouple.dto.user.request.UserDeleteRequest;
 import com.example.grouple.dto.user.request.UserImageModifyForm;
 import com.example.grouple.dto.user.request.UserModifyRequest;
@@ -17,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "02. 유저")
 @RestController
-@RequestMapping("/users") // api 명세에 따라 변경
-public class UserController {
+@RequestMapping("/users")
+public class UserController extends BaseController {
 
     private final UserService userService;
     private final OrganizationService organizationService;
@@ -27,6 +26,7 @@ public class UserController {
         this.userService = userService;
         this.organizationService = organizationService;
     }
+
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal AuthPrincipal principal) {
@@ -52,7 +52,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteUser(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody UserDeleteRequest request) throws Exception {
         userService.deleteUser(requireUserId(principal), request);
-        return ResponseEntity.ok(ApiResponse.success("계정이 정상적으로 삭제되었습니다."));
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/me/organizations")
@@ -60,12 +60,5 @@ public class UserController {
     public ResponseEntity<?> getUserOrganizations(@AuthenticationPrincipal AuthPrincipal principal){
         var res = organizationService.getOrgsByOwner_Id(requireUserId(principal));
         return ResponseEntity.ok(ApiResponse.success(res));
-    }
-
-    private Integer requireUserId(AuthPrincipal principal) {
-        if (principal == null || principal.getId() == null) {
-            throw new UnauthorizedException("인증 정보를 확인할 수 없습니다.");
-        }
-        return principal.getId();
     }
 }

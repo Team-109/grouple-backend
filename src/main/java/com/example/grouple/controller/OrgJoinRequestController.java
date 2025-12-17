@@ -6,17 +6,15 @@ import com.example.grouple.security.AuthPrincipal;
 import com.example.grouple.service.JoinRequestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "05. 조직 가입 요청")
 @RestController
 @RequestMapping("/organizations/{orgId}/join-requests")
-public class OrgJoinRequestController {
+public class OrgJoinRequestController extends BaseController {
 
     private final JoinRequestService joinRequestService;
 
@@ -59,12 +57,5 @@ public class OrgJoinRequestController {
                                                @Valid @RequestBody(required = false) JoinRequestDecisionRequest request) {
         var res = joinRequestService.rejectJoinRequest(requireUserId(principal), orgId, reqId, request);
         return ResponseEntity.ok(ApiResponse.success(res));
-    }
-
-    private Integer requireUserId(AuthPrincipal principal) {
-        if (principal == null || principal.getId() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "인증 정보를 확인할 수 없습니다.");
-        }
-        return principal.getId();
     }
 }

@@ -48,7 +48,7 @@ class JoinRequestControllerTests {
         ResponseEntity<?> result = controller.createJoinRequest(new AuthPrincipal(10, "tester"),
                 "ABC123", request);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         ApiResponse<?> body = (ApiResponse<?>) result.getBody();
         Assertions.assertNotNull(body);
         assertThat(body.getData()).isEqualTo(response);
