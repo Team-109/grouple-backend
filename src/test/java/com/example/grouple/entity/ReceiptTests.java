@@ -83,5 +83,29 @@ class ReceiptTests {
         assertThat(receipt.getUser().getId()).isEqualTo(30);
     }
 
-    // --- 3. Auditing(시간) 필드 테스트 ---
+    @Test
+    void shouldBuildReceiptWithBuilder() {
+        Organization org = createMockOrganization(50);
+        User user = createMockUser(60);
+
+        Receipt receipt = Receipt.builder()
+                .type("CARD")
+                .amount(5000)
+                .category("FOOD")
+                .description("lunch")
+                .date(MOCK_DATE)
+                .image("img.png")
+                .organization(org)
+                .user(user)
+                .build();
+
+        assertThat(receipt.getType()).isEqualTo("CARD");
+        assertThat(receipt.getAmount()).isEqualTo(5000);
+        assertThat(receipt.getCategory()).isEqualTo("FOOD");
+        assertThat(receipt.getDescription()).isEqualTo("lunch");
+        assertThat(receipt.getDate()).isEqualTo(MOCK_DATE);
+        assertThat(receipt.getImage()).isEqualTo("img.png");
+        assertThat(receipt.getOrganization()).isSameAs(org);
+        assertThat(receipt.getUser()).isSameAs(user);
+    }
 }

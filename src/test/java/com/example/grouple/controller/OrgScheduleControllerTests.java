@@ -24,13 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ScheduleControllerTests {
+class OrgScheduleControllerTests {
 
     @Mock
     private ScheduleService scheduleService;
 
     @InjectMocks
-    private ScheduleController controller;
+    private OrgScheduleController controller;
 
 
     @Test
@@ -61,7 +61,7 @@ class ScheduleControllerTests {
                 .thenReturn(mockRes);
 
         ResponseEntity<?> result =
-                controller.createSchedule(new AuthPrincipal(userId, "user"), orgId, request);
+        controller.createSchedule(new AuthPrincipal(userId, "user"), orgId, request);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
