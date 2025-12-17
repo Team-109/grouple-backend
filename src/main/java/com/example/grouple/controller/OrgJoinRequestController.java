@@ -1,6 +1,7 @@
 package com.example.grouple.controller;
 
 import com.example.grouple.api.ApiResponse;
+import com.example.grouple.dto.joinrequest.request.JoinRequestCreateRequest;
 import com.example.grouple.dto.joinrequest.request.JoinRequestDecisionRequest;
 import com.example.grouple.security.AuthPrincipal;
 import com.example.grouple.service.JoinRequestService;
@@ -28,6 +29,15 @@ public class OrgJoinRequestController extends BaseController {
                                              @PathVariable Integer orgId) {
         var res = joinRequestService.getOrganizationJoinRequests(requireUserId(principal), orgId);
         return ResponseEntity.ok(ApiResponse.success(res));
+    }
+
+    @PostMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> createJoinRequest(@AuthenticationPrincipal AuthPrincipal principal,
+                                               @PathVariable Integer orgId,
+                                               @Valid @RequestBody(required = false) JoinRequestCreateRequest request) {
+        var res = joinRequestService.createJoinRequestByOrgId(requireUserId(principal), orgId, request);
+        return ResponseEntity.status(201).body(ApiResponse.success(res));
     }
 
     @GetMapping("/{reqId}")
