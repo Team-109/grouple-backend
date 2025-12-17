@@ -61,6 +61,15 @@ public class JoinRequestService {
         return JoinRequestResponse.from(joinRequestRepository.save(joinRequest));
     }
 
+    @Transactional
+    public JoinRequestResponse createJoinRequestByOrgId(Integer userId,
+                                                        Integer orgId,
+                                                        JoinRequestCreateRequest request) {
+        Organization organization = organizationRepository.findById(orgId)
+                .orElseThrow(() -> new NoSuchElementException("조직을 찾을 수 없습니다."));
+        return createJoinRequest(userId, organization.getCode(), request);
+    }
+
     public JoinRequestListResponse getOrganizationJoinRequests(Integer actorId, Integer orgId) {
         Organization organization = loadOrgAndValidateOwner(actorId, orgId);
         List<JoinRequestResponse> requests = joinRequestRepository.findAllByOrganization_Id(orgId)
